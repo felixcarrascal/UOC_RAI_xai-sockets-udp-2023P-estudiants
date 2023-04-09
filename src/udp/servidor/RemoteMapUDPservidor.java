@@ -40,6 +40,9 @@ import lsim.library.api.LSimLogger;
 
 public class RemoteMapUDPservidor {
 	
+	public static final int SOCKET_SERVER = 6000;
+	
+	
 	public RemoteMapUDPservidor(int server_port, Map<String, String> map){
 		LSimLogger.log(Level.INFO, "Inici RemoteMapUDPservidor ");
 		LSimLogger.log(Level.INFO, "server_port: " + server_port);
@@ -59,7 +62,7 @@ public class RemoteMapUDPservidor {
 
 		/* TODO: implementació de la part servidor UDP / implementation of UDP server's side / implementación de la parte servidor UDP */
 		
-		try (DatagramSocket socket = new DatagramSocket(Constantes.SOCKET_SERVER)) {
+		try (DatagramSocket socket = new DatagramSocket(SOCKET_SERVER)) {
 			while (true) {
 				byte[] mensaje_bytes = new byte[256];
 			    DatagramPacket request = new DatagramPacket(mensaje_bytes, mensaje_bytes.length);
