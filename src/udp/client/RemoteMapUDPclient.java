@@ -26,14 +26,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.uoc.dpcs.lsim.logger.LoggerManager.Level;
 import lsim.library.api.LSimLogger;
+import udp.servidor.Constantes;
 
 
 /**
@@ -71,9 +70,42 @@ public class RemoteMapUDPclient {
 		LSimLogger.log(Level.TRACE, "server_address: " + server_address);
 		LSimLogger.log(Level.TRACE, "server_port: " + server_port);
 
+		
+		
+		byte[] mensaje_bytes = new byte[4];
+		DatagramPacket paquete;
+		boolean recibido = false;
 		String resposta = null;
+		try (DatagramSocket socket = new DatagramSocket(Constantes.SOCKET_CLIENT)) {
+			
+			InetAddress adr = InetAddress.getByName("localhost");
+			
+			System.arraycopy(key.getBytes(), 0, mensaje_bytes, 0, key.getBytes().length);
+			
+			paquete = new DatagramPacket(mensaje_bytes, mensaje_bytes.length, adr, Constantes.SOCKET_SERVER);
+			socket.send(paquete);
+			
+			while(!recibido) {
+				DatagramPacket request = new DatagramPacket(mensaje_bytes, mensaje_bytes.length);
+				socket.receive(request);
+				resposta = new String(request.getData());
+				LSimLogger.log(Level.INFO, "Cliente recibe: " + resposta);
+				if(!resposta.isEmpty() && !resposta.isBlank()) {
+					recibido = true;
+				}
+			}
+			
+		} catch (IOException ex) {
+			System.err.println(ex);
+		}
+		
+		
+		
 		
 		/* TODO: implementació de la part client UDP / implement UDP client's side / implementación de la parte cliente UDP */
+		
+		
+		
 		
 		return resposta;
 	}

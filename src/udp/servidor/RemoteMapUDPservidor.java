@@ -21,8 +21,11 @@
 
 package udp.servidor;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,9 +57,33 @@ public class RemoteMapUDPservidor {
 				90000 // 90 seconds
 				); 
 
-		
-		// Implementation of the server
-
 		/* TODO: implementació de la part servidor UDP / implementation of UDP server's side / implementación de la parte servidor UDP */
+		
+		try (DatagramSocket socket = new DatagramSocket(Constantes.SOCKET_SERVER)) {
+			while (true) {
+				byte[] mensaje_bytes = new byte[256];
+			    DatagramPacket request = new DatagramPacket(mensaje_bytes, mensaje_bytes.length);
+				socket.receive(request);
+ 
+			    InetAddress clientAddress = request.getAddress();
+			    int clientPort = request.getPort();
+ 
+			    mensaje_bytes = getResponse(request.getData());
+			    
+			    DatagramPacket response = new DatagramPacket(mensaje_bytes, mensaje_bytes.length, clientAddress, clientPort);
+			    socket.send(response);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private byte[] getResponse(byte[] data) {
+		String respuestilla = "R_" + new String(data); 
+		LSimLogger.log(Level.INFO, "respuestilla: " + respuestilla);
+		
+		return respuestilla.getBytes();
 	}
 }
