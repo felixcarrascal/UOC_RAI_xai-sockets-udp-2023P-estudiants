@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -77,14 +76,13 @@ public class RemoteMapUDPservidor {
 			    socket.send(response);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LSimLogger.log(Level.INFO, "IOException servidor: " + e.getMessage());
 		}
 
 	}
 
 	private byte[] getResponse(byte[] data) {
-		String respuestilla = "R_" + new String(data); 
+		String respuestilla = ("R_" + new String(data)).trim(); 
 		LSimLogger.log(Level.INFO, "respuestilla: " + respuestilla);
 		
 		return respuestilla.getBytes();

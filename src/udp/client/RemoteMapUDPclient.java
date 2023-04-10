@@ -72,12 +72,12 @@ public class RemoteMapUDPclient {
 		LSimLogger.log(Level.TRACE, "server_address: " + server_address);
 		LSimLogger.log(Level.TRACE, "server_port: " + server_port);
 
+		String resposta = null;
 		
-		
-		byte[] mensaje_bytes = new byte[4];
+		byte[] mensaje_bytes = new byte[256];
 		DatagramPacket paquete;
 		boolean recibido = false;
-		String resposta = null;
+		
 		try (DatagramSocket socket = new DatagramSocket(SOCKET_CLIENT)) {
 			
 			InetAddress adr = InetAddress.getByName("localhost");
@@ -90,7 +90,7 @@ public class RemoteMapUDPclient {
 			while(!recibido) {
 				DatagramPacket request = new DatagramPacket(mensaje_bytes, mensaje_bytes.length);
 				socket.receive(request);
-				resposta = new String(request.getData());
+				resposta = new String(request.getData()).trim();
 				LSimLogger.log(Level.INFO, "Cliente recibe: " + resposta);
 				if(!resposta.isEmpty() && !resposta.isBlank()) {
 					recibido = true;
@@ -98,17 +98,11 @@ public class RemoteMapUDPclient {
 			}
 			
 		} catch (IOException ex) {
-			System.err.println(ex);
+			LSimLogger.log(Level.INFO, "IOException en cliente: " + ex.getMessage());
 		}
 		
-		
-		
-		
-		/* TODO: implementació de la part client UDP / implement UDP client's side / implementación de la parte cliente UDP */
-		
-		
-		
-		
 		return resposta;
+		
+
 	}
 }
