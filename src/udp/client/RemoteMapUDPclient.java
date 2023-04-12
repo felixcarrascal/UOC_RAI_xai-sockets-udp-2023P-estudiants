@@ -32,7 +32,6 @@ import java.util.Map;
 
 import edu.uoc.dpcs.lsim.logger.LoggerManager.Level;
 import lsim.library.api.LSimLogger;
-import udp.servidor.RemoteMapUDPservidor;
 
 
 /**
@@ -41,8 +40,6 @@ import udp.servidor.RemoteMapUDPservidor;
  */
 
 public class RemoteMapUDPclient {
-	
-	public static final int SOCKET_CLIENT = 6001;
 
 	public RemoteMapUDPclient() {
 	}
@@ -74,21 +71,19 @@ public class RemoteMapUDPclient {
 
 		String resposta = null;
 		
-		byte[] mensaje_bytes = new byte[256];
 		DatagramPacket paquete;
 		boolean recibido = false;
 		
-		try (DatagramSocket socket = new DatagramSocket(SOCKET_CLIENT)) {
+		try (DatagramSocket socket = new DatagramSocket()) {
 			
-			InetAddress adr = InetAddress.getByName("localhost");
+			InetAddress adr = InetAddress.getByName(server_address);
 			
-			System.arraycopy(key.getBytes(), 0, mensaje_bytes, 0, key.getBytes().length);
-			
-			paquete = new DatagramPacket(mensaje_bytes, mensaje_bytes.length, adr, RemoteMapUDPservidor.SOCKET_SERVER);
+			paquete = new DatagramPacket(key.getBytes(), key.getBytes().length, adr, server_port);
 			socket.send(paquete);
 			
 			while(!recibido) {
-				DatagramPacket request = new DatagramPacket(mensaje_bytes, mensaje_bytes.length);
+				byte[] resp = new byte[1024];
+				DatagramPacket request = new DatagramPacket(resp, resp.length);
 				socket.receive(request);
 				resposta = new String(request.getData()).trim();
 				LSimLogger.log(Level.INFO, "Cliente recibe: " + resposta);
