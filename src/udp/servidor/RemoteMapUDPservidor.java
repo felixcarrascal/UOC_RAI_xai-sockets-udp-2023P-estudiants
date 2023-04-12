@@ -39,9 +39,6 @@ import lsim.library.api.LSimLogger;
 
 public class RemoteMapUDPservidor {
 	
-	public static final int SOCKET_SERVER = 6000;
-	
-	
 	public RemoteMapUDPservidor(int server_port, Map<String, String> map){
 		LSimLogger.log(Level.INFO, "Inici RemoteMapUDPservidor ");
 		LSimLogger.log(Level.INFO, "server_port: " + server_port);
@@ -59,9 +56,12 @@ public class RemoteMapUDPservidor {
 				90000 // 90 seconds
 				); 
 
+		
+		// Implementation of the server
+
 		/* TODO: implementació de la part servidor UDP / implementation of UDP server's side / implementación de la parte servidor UDP */
 		
-		try (DatagramSocket socket = new DatagramSocket(SOCKET_SERVER)) {
+		try (DatagramSocket socket = new DatagramSocket(server_port)) {
 			while (true) {
 				byte[] mensaje_bytes = new byte[256];
 			    DatagramPacket request = new DatagramPacket(mensaje_bytes, mensaje_bytes.length);
@@ -70,7 +70,7 @@ public class RemoteMapUDPservidor {
 			    InetAddress clientAddress = request.getAddress();
 			    int clientPort = request.getPort();
  
-			    mensaje_bytes = getResponse(request.getData());
+			    mensaje_bytes = getResponse(request.getData(), map);
 			    
 			    DatagramPacket response = new DatagramPacket(mensaje_bytes, mensaje_bytes.length, clientAddress, clientPort);
 			    socket.send(response);
@@ -81,8 +81,9 @@ public class RemoteMapUDPservidor {
 
 	}
 
-	private byte[] getResponse(byte[] data) {
-		String respuestilla = ("R_" + new String(data)).trim(); 
+	private byte[] getResponse(byte[] data, Map<String, String> map) {
+		String key = new String(data).trim();
+		String respuestilla = map.get(key); 
 		LSimLogger.log(Level.INFO, "respuestilla: " + respuestilla);
 		
 		return respuestilla.getBytes();
